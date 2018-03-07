@@ -6,7 +6,7 @@
         </div>
         <div class="weather-box" v-if="data">
             <!--<div class="today-date">{{ data.date }}</div>-->
-            <div class="info">空气质量：{{ getPm25() }}</div>
+            <div class="info" :style="{color: color}">空气质量：{{ getPm25() }}</div>
             <ul class="weather-list">
                 <li class="item" v-for="item in data.results[0].weather_data">
                     <div class="date">{{ item.date }}</div>
@@ -38,6 +38,7 @@
                 title: '天气',
                 location: '广州',
                 data: null,
+                color: '#333',
                 page: {
                     menu: [
                         {
@@ -109,6 +110,8 @@
                     grade = 5
                     return '严重污染'
                 }
+                this.color = colors[grade]
+                console.log(this.color)
                 return this.data.results[0].pm25
             },
             parser(data) {
