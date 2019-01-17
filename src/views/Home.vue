@@ -6,25 +6,27 @@
         </div>
         <div class="weather-box" v-if="data">
             <!--<div class="today-date">{{ data.date }}</div>-->
-            <div class="info" :style="{color: color}">空气质量：{{ getPm25() }}</div>
+            <!-- <div class="info" :style="{color: color}">空气质量：{{ getPm25() }}</div> -->
             <ul class="weather-list">
-                <li class="item" v-for="item in data.results[0].weather_data">
+                <li class="item" v-for="item in data.forecasts">
                     <div class="date">{{ item.date }}</div>
-                    <div>{{ item.temperature }}</div>
+                    <div>{{ item.dayTemp }} ~ {{ item.nightTemp }} ℃</div>
                     <div>{{ item.weather }}</div>
-                    <div>{{ item.wind }}</div>
+                    <div>风力 {{ item.dayWindPower }}</div>
                     <div class="img">
-                        <img :src="item.dayPictureUrl" title="白天"/>
-                        <img :src="item.nightPictureUrl" title="晚上"/>
+                        <div v-if="item.dayWeather === item.nightWeather">{{ item.dayWeather }}</div>
+                        <div v-if="item.dayWeather !== item.nightWeather">{{ item.dayWeather }} 转 {{ item.nightWeather }}</div>
+                        <!-- <img :src="item.dayPictureUrl" title="白天"/>
+                        <img :src="item.nightPictureUrl" title="晚上"/> -->
                     </div>
                 </li>
             </ul>
             <ui-article>
-                <h2>温馨建议</h2>
+                <!-- <h2>温馨建议</h2> -->
                 <ul>
-                    <li v-for="item in data.results[0].index">
+                    <!-- <li v-for="item in data.results[0].index">
                         {{ item.title }}：{{ item.des }}
-                    </li>
+                    </li> -->
                 </ul>
             </ui-article>
         </div>
@@ -62,7 +64,7 @@
 //                let lastTime = this.$storage.get('cacheTime')
 //                let time = new Date().getTime()
                 let date = new Date().getHours()
-                if (date === this.$storage.get(this.location + 'date')) {
+                if (date === this.$storage.get(this.location + 'date') && false) {
                     console.log('从缓存获取')
                     this.data = this.$storage.get(this.location + 'data')
                     if (!this.data) {
