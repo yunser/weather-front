@@ -1,52 +1,114 @@
 <template>
-    <my-page :title="title">
-        <ui-text-field v-model="location" hintText="输入你要查找的城市" />
-        <div class="btns">
-            <ui-raised-button label="查询" primary @click="query" />
-        </div>
-        <div class="weather-box" v-if="data">
-            <!--<div class="today-date">{{ data.date }}</div>-->
-            <!-- <div class="info" :style="{color: color}">空气质量：{{ getPm25() }}</div> -->
-            <ul class="weather-list">
-                <li class="item" v-for="item in data.forecasts">
-                    <div class="date">{{ item.date }}</div>
-                    <div>{{ item.dayTemp }} ~ {{ item.nightTemp }} ℃</div>
-                    <div>{{ item.weather }}</div>
-                    <div>风力 {{ item.dayWindPower }}</div>
-                    <div class="img">
-                        <div v-if="item.dayWeather === item.nightWeather">{{ item.dayWeather }}</div>
-                        <div v-if="item.dayWeather !== item.nightWeather">{{ item.dayWeather }} 转 {{ item.nightWeather }}</div>
-                        <!-- <img :src="item.dayPictureUrl" title="白天"/>
-                        <img :src="item.nightPictureUrl" title="晚上"/> -->
+    <my-page :title="title" :page="page">
+        <div class="common-container container">
+            <ui-text-field v-model="location" hintText="输入你要查找的城市" label="城市名" />
+            <div class="btns">
+                <ui-raised-button label="查询" primary @click="search" />
+            </div>
+            <div class="weather-box" v-if="now">
+                <div class="weather-card">
+                    <img class="icon" :src="now.icon">
+                    <!-- <div class="icon">{{  }}</div> -->
+                    <div class="right">
+                        <div class="tem">{{ now.tem }}°</div>
+                        <div class="weather">{{ now.weather }}，相对湿度：{{ now.humidity }}，降水量：{{ now.precipitation }}，风力：{{ now.windPower }}</div>
                     </div>
-                </li>
-            </ul>
-            <ui-article>
-                <!-- <h2>温馨建议</h2> -->
-                <ul>
-                    <!-- <li v-for="item in data.results[0].index">
-                        {{ item.title }}：{{ item.des }}
-                    </li> -->
+                    <!-- <ui-icon-button class="more" icon="more_horiz" /> -->
+                </div>
+                <!--<div class="today-date">{{ data.date }}</div>-->
+                <!-- <div class="info" :style="{color: color}">空气质量：{{ getPm25() }}</div> -->
+                <ul class="weather-list">
+                    <li class="item" v-for="item in forecasts">
+                        <div class="date">{{ item.date }}</div>
+                        <div>{{ item.dayTemp }} ~ {{ item.nightTemp }} ℃</div>
+                        <div>{{ item.weather }}</div>
+                        <div>风力：{{ item.dayWindPower }}</div>
+                        <div>降水率：{{ item.pp }}%</div>
+                        <div class="img">
+                            <div v-if="item.dayWeather === item.nightWeather">{{ item.dayWeather }}</div>
+                            <div v-if="item.dayWeather !== item.nightWeather">{{ item.dayWeather }} 转 {{ item.nightWeather }}</div>
+                            <!-- <img :src="item.dayPictureUrl" title="白天"/>
+                            <img :src="item.nightPictureUrl" title="晚上"/> -->
+                        </div>
+                    </li>
                 </ul>
-            </ui-article>
+                <ui-article>
+                    <!-- <h2>温馨建议</h2> -->
+                    <ul>
+                        <!-- <li v-for="item in data.results[0].index">
+                            {{ item.title }}：{{ item.des }}
+                        </li> -->
+                    </ul>
+                </ui-article>
+            </div>
+
+            <div class="weather-box" v-if="data2">
+                <!--<div class="today-date">{{ data.date }}</div>-->
+                <!-- <div class="info" :style="{color: color}">空气质量：{{ getPm25() }}</div> -->
+                <ul class="weather-list">
+                    <li class="item" v-for="item in data.forecasts">
+                        <div class="date">{{ item.date }}</div>
+                        <div>{{ item.dayTemp }} ~ {{ item.nightTemp }} ℃</div>
+                        <div>{{ item.weather }}</div>
+                        <div>风力 {{ item.dayWindPower }}</div>
+                        <div class="img">
+                            <div v-if="item.dayWeather === item.nightWeather">{{ item.dayWeather }}</div>
+                            <div v-if="item.dayWeather !== item.nightWeather">{{ item.dayWeather }} 转 {{ item.nightWeather }}</div>
+                            <!-- <img :src="item.dayPictureUrl" title="白天"/>
+                            <img :src="item.nightPictureUrl" title="晚上"/> -->
+                        </div>
+                    </li>
+                </ul>
+                <ui-article>
+                    <!-- <h2>温馨建议</h2> -->
+                    <ul>
+                        <!-- <li v-for="item in data.results[0].index">
+                            {{ item.title }}：{{ item.des }}
+                        </li> -->
+                    </ul>
+                </ui-article>
+            </div>
+
+            <div class="detail-box" v-if="false">
+
+            </div>
         </div>
     </my-page>
 </template>
 
 <script>
+    /* eslint-disable */
     export default {
         data () {
             return {
                 title: '天气',
-                location: '广州',
+                location: '',
+                now: null,
+                // now: {
+                //     icon: '/static/weather/101.png',
+                //     tem: 34,
+                //     weather: '多云'
+                // },
+                forecasts: [
+                    {
+                        date: '10-20',
+                        dayTemp: 10,
+                        nightTemp: 20,
+                        weather: '多云',
+                        dayWindPower: '4',
+
+                    }
+                ],
                 data: null,
                 color: '#333',
                 page: {
                     menu: [
                         {
                             type: 'icon',
-                            icon: 'help',
-                            to: '/help'
+                            icon: 'apps',
+                            href: 'https://app.yunser.com?utm_source=weather',
+                            target: '_blank',
+                            title: '应用'
                         }
                     ]
                 }
@@ -57,7 +119,73 @@
         },
         methods: {
             init() {
-                this.query()
+                this.getMyIp()
+                // this.query()
+            },
+            getMyIp() {
+                let url = `https://phpapi.yunser.com/ip.php`
+                this.$http.get(url).then(
+                    response => {
+                        let data = response.data
+                        console.log('IP信息', data)
+                        this.getWeather(data)
+                    },
+                    response => {
+                        console.log(response)
+                    })
+            },
+            getWeather(ip) {
+                let location = ip
+                this.$http.get(`/weather/now?location=${location}`).then(
+                    response => {
+                        let data = response.data
+                        console.log('IP信息', data)
+                        let now = data.HeWeather6[0].now
+                        this.now = {
+                            icon: `https://a.hecdn.net/img/plugin/190516/icon/c/${now.cond_code}d.png`,
+                            tem: now.tmp,
+                            weather: now.cond_txt,
+                            humidity: now.hum,
+                            precipitation: now.pcpn,
+                            windPower: now.wind_sc,
+                        }
+                        this.location = data.HeWeather6[0].basic.location
+                        this.get3Days(location)
+                    },
+                    response => {
+                        console.log(response)
+                    })
+            },
+            get3Days(location) {
+                this.$http.get(`/weather/forecast?location=${location}`).then(
+                    response => {
+                        let data = response.data
+                        console.log('IP信息2', data)
+                        let forecast = data.HeWeather6[0].daily_forecast
+                        this.forecasts = forecast.slice(0, 3).map((item, index) => {
+                            return {
+                                date: ['今天', '明天', '后天'][index],
+                                dayTemp: item.tmp_max,
+                                nightTemp: item.tmp_min,
+                                weather: `${item.cond_txt_d}/${item.cond_txt_n}`,
+                                dayWindPower: item.wind_sc,
+                                pp: item.pop,
+                            }
+                        })
+                    },
+                    response => {
+                        console.log(response)
+                    })
+            },
+            search() {
+                if (!this.location) {
+                    this.$message({
+                        type: 'danger',
+                        text: '请输入城市名'
+                    })
+                    return
+                }
+                this.getWeather(this.location)
             },
             query() {
 //                const cacheTime = 30 * 60 // 缓存半小时数据
@@ -126,6 +254,9 @@
 
 <style lang="scss" scoped>
     @import "../scss/var";
+    .container {
+        max-width: 480px;
+    }
     .btns {
         margin-bottom: 24px;
     }
@@ -134,6 +265,28 @@
     }
     .info {
         margin-bottom: 16px;
+    }
+    .weather-card {
+        position: relative;
+        display: flex;
+        padding: 40px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 6px rgba(0,0,0,.117647), 0 1px 4px rgba(0,0,0,.117647);
+        .icon {
+            width: 56px;
+            height: 56px;
+            margin-right: 16px;
+        }
+        .tem {
+            font-size: 40px;
+        }
+        .more {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+        }
+    }
+    .weather-box {
     }
     .weather-list {
         @include clearfix;
@@ -163,5 +316,14 @@
                 float: none;
             }
         }
+    }
+    .detail-box {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10000;
+        background-color: #fff;
     }
 </style>
