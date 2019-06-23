@@ -142,7 +142,8 @@
                         console.log('IP信息', data)
                         let now = data.HeWeather6[0].now
                         this.now = {
-                            icon: `https://a.hecdn.net/img/plugin/190516/icon/c/${now.cond_code}d.png`,
+                            // icon: `https://a.hecdn.net/img/plugin/190516/icon/c/${now.cond_code}d.png`,
+                            icon: `/static/weather/${now.cond_code}.png`,
                             tem: now.tmp,
                             weather: now.cond_txt,
                             humidity: now.hum,
