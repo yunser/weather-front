@@ -8,6 +8,9 @@
                 <ui-list-item title="首页" to="/">
                     <ui-icon slot="left" value="home"/>
                 </ui-list-item>
+                <ui-list-item title="插件" to="/plugin">
+                    <ui-icon slot="left" value="home"/>
+                </ui-list-item>
                 <ui-list-item title="关于" href="https://project.yunser.com/products/d2cd0350fbdf11e8a644d75e0db84a23" target="_blank">
                     <ui-icon slot="left" value="info"/>
                 </ui-list-item>

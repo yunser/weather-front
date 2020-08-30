@@ -1,17 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const Home = resolve => require(['@/views/Home'], resolve)
-
 const Error404 = resolve => require(['@/views/error/Error404'], resolve)
 
 Vue.use(Router)
 
 let routes = [
-    {
-        path: '/',
-        component: Home
-    },
+    { path: '/', component: resolve => require(['@/views/Home'], resolve) },
+    { path: '/plugin', component: resolve => require(['@/views/Plugin'], resolve) },
     {
         path: '*',
         component: Error404
